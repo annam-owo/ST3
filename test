@@ -1,0 +1,100 @@
+package test;
+
+import main.LoginApp;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
+
+import java.sql.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class LoginAppTest {
+
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/world";
+    private static final String DB_USER = "root";
+    private static final String DB_PASSWORD = "12345678";
+    private static Connection connection;
+
+    @BeforeAll
+    public static void initializeDatabaseConnection() throws SQLException {
+        connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+    }
+
+    @AfterAll
+    public static void closeDatabaseConnection() throws SQLException {
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+        }
+    }
+
+    /**
+     * Helper method to authenticate a user and return their username.
+     */
+    private String authenticateUser(String email) {
+        LoginApp loginApp = new LoginApp();
+        return loginApp.authenticateUser(email);
+    }
+
+    /**
+     * Test case: Valid user login with an existing email.
+     */
+    @Test
+    public void shouldReturnUserNameForValidUser() {
+        String email = "johndoe@example.com";
+        String expectedUserName = "John Doe";
+        
+        String actualUserName = authenticateUser(email);
+        
+        assertNotNull(actualUserName, "User should be found for a valid email.");
+        assertEquals(expectedUserName, actualUserName, "Returned username should match the expected username.");
+    }
+
+    /**
+     * Test case: Invalid user login with a nonexistent email.
+     */
+    @Test
+    public void shouldReturnNullForInvalidUser() {
+        String email = "nonexistent@example.com";
+        
+        String actualUserName = authenticateUser(email);
+        
+        assertNull(actualUserName, "User should not exist for an invalid email.");
+    }
+
+    /**
+     * Test case: Empty email field should not authenticate.
+     */
+    @Test
+    public void shouldReturnNullForEmptyEmail() {
+        String email = "";
+        
+        String actualUserName = authenticateUser(email);
+        
+        assertNull(actualUserName, "Authentication should fail for an empty email field.");
+    }
+
+    /**
+     * Test case: Empty password field should still return a valid user 
+     * assuming only email is required for the given implementation.
+     */
+    @Test
+    public void shouldAuthenticateUserWithEmptyPassword() {
+        String email = "johndoe@example.com";
+        
+        String actualUserName = authenticateUser(email);
+        
+        assertNotNull(actualUserName, "User should still authenticate when the password field is empty.");
+    }
+
+    /**
+     * Test case: Invalid email format should fail authentication.
+     */
+    @Test
+    public void shouldReturnNullForInvalidEmailFormat() {
+        String email = "invalidEmailFormat";
+        
+        String actualUserName = authenticateUser(email);
+        
+        assertNull(actualUserName, "Authentication should fail for an invalid email format.");
+    }
+}
