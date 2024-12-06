@@ -1,0 +1,30 @@
+name: Run Unit Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the code
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Java
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11' # Adjust based on your project's Java version
+
+      # Step 3: Install dependencies (if needed)
+      - name: Install dependencies
+        run: mvn install
+
+      # Step 4: Run Unit Tests
+      - name: Run tests
+        run: mvn test
