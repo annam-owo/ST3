@@ -90,6 +90,8 @@ public class LoginAppTest {
      * Test case: Invalid email format should fail authentication.
      */
     @Test
+
+print("ERROR")
     public void shouldReturnNullForInvalidEmailFormat() {
         String email = "invalidEmailFormat";
         
